@@ -25,13 +25,14 @@ class AuthenticationClient:
         url = f'{self.base_url}{endpoint}'
         ts = int(time.time() * 1e3)
         headers = self._generate_signature(action, ts, params)
+        # print(headers)
         if method == 'GET':
             response = requests.get(url, headers=headers, params=params)
         elif method == 'DELETE':
             response = requests.delete(
                 url, headers=headers, data=json.dumps(params))
         else:
-            print(json.dumps(params))
+            # print(json.dumps(params))
             response = requests.post(
                 url, headers=headers, data=json.dumps(params))
         if response.status_code != 200:
@@ -42,11 +43,13 @@ class AuthenticationClient:
         if 'postOnly' in params:
             params = params.copy()
             params['postOnly'] = str(params['postOnly']).lower()
-        param_str = "&"+"&".join(f"{k}={v}" for k, v in sorted(params.items()))
+        param_str = "&".join(f"{k}={v}" for k, v in sorted(params.items()))
         if not param_str:
             param_str = ''
+        if len(params) > 0:
+            param_str = "&" + param_str
         sign_str = f"instruction={action}{param_str}&timestamp={timestamp}&window={self.window}"
-        print(sign_str)
+        # print(sign_str)
         signature = base64.b64encode(
             self.private_key_obj.sign(sign_str.encode())).decode()
         return {
