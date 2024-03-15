@@ -36,10 +36,10 @@ class Run_Main():
 
             if grid_buy_price >= cur_market_price:   # 是否满足买入价
                 # res = msg.buy_limit_msg(self.coinType, quantity, grid_buy_price)
-                res = client.execute_order("Limit", "Bid", SOL_USDC, quantity=quantity, price=str(grid_buy_price))
-                print("以价格 %s 买入 %s" % (grid_buy_price, quantity), res)
+                res = client.execute_order("Limit", "Bid", SOL_USDC, quantity=quantity, price=str(cur_market_price))
+                print("以价格 %s 买入 %s" % (cur_market_price, quantity), res)
                 if res['id']: # 挂单成功
-                    runbet.modify_price(grid_buy_price, step+1) #修改data.json中价格、当前步数
+                    runbet.modify_price(cur_market_price, step+1) #修改data.json中价格、当前步数
                     time.sleep(60) # 挂单后，停止运行1分钟
                 else:
                     break
@@ -49,10 +49,11 @@ class Run_Main():
                     runbet.modify_price(grid_sell_price,step)
                 else:
                     # res = msg.sell_limit_msg(self.coinType, runbet.get_quantity(False), grid_sell_price)
-                    res = client.execute_order("Limit", "Ask", SOL_USDC, quantity=quantity, price=str(grid_sell_price))
-                    print("以价格 %s 卖出 %s" % (grid_sell_price, quantity), res)
+                    sell_quantity = runbet.get_quantity(False)
+                    res = client.execute_order("Limit", "Ask", SOL_USDC, quantity=sell_quantity, price=str(cur_market_price))
+                    print("以价格 %s 卖出 %s" % (cur_market_price, sell_quantity), res)
                     if res['id']:
-                        runbet.modify_price(grid_sell_price, step - 1)
+                        runbet.modify_price(cur_market_price, step - 1)
                         time.sleep(60)  # 挂单后，停止运行1分钟
                     else:
                         break
@@ -61,6 +62,7 @@ class Run_Main():
                 time.sleep(1)
 
 
+# 2713.00
 if __name__ == "__main__":
     instance = Run_Main()
     try:
