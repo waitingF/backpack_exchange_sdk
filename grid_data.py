@@ -1,4 +1,5 @@
 import os,json
+from dingding import ding
 # linux
 data_path = os.getcwd()+"/data/data.json"
 # windows
@@ -66,8 +67,10 @@ class RunBetData:
         data_json["runBet"]["grid_sell_price"] = round(deal_price * (1 + data_json["config"]["profit_ratio"] / 100), 2)
         data_json["runBet"]["step"] = step
         self._modify_json_data(data_json)
-        print("修改后的补仓价格为:{double}。修改后的网格价格为:{grid}".format(double=data_json["runBet"]["next_buy_price"],
-                                                           grid=data_json["runBet"]["grid_sell_price"]))
+        msg = "修改后的补仓价格为:{double}。修改后的网格价格为:{grid}".format(double=data_json["runBet"]["next_buy_price"],
+                                                           grid=data_json["runBet"]["grid_sell_price"])
+        ding.send(msg)
+        print(msg)
 
 
 if __name__ == "__main__":

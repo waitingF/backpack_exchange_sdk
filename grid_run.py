@@ -4,6 +4,7 @@ import time
 
 from backpack_exchange_sdk.authenticated import AuthenticationClient
 from backpack_exchange_sdk.public import PublicClient
+from dingding import ding
 from config import key, secret
 
 runbet = RunBetData()
@@ -37,7 +38,9 @@ class Run_Main():
             if grid_buy_price >= cur_market_price:   # 是否满足买入价
                 # res = msg.buy_limit_msg(self.coinType, quantity, grid_buy_price)
                 res = client.execute_order("Limit", "Bid", SOL_USDC, quantity=quantity, price=str(cur_market_price))
-                print("以价格 %s 买入 %s" % (cur_market_price, quantity), res)
+                msg = "以价格 %s 买入 %s" % (cur_market_price, quantity)
+                ding.send(msg)
+                print(msg, res)
                 if res['id']: # 挂单成功
                     runbet.modify_price(cur_market_price, step+1) #修改data.json中价格、当前步数
                     time.sleep(60) # 挂单后，停止运行1分钟
@@ -51,7 +54,9 @@ class Run_Main():
                     # res = msg.sell_limit_msg(self.coinType, runbet.get_quantity(False), grid_sell_price)
                     sell_quantity = runbet.get_quantity(False)
                     res = client.execute_order("Limit", "Ask", SOL_USDC, quantity=sell_quantity, price=str(cur_market_price))
-                    print("以价格 %s 卖出 %s" % (cur_market_price, sell_quantity), res)
+                    msg = "以价格 %s 卖出 %s" % (cur_market_price, sell_quantity)
+                    ding.send(msg)
+                    print(msg, res)
                     if res['id']:
                         runbet.modify_price(cur_market_price, step - 1)
                         time.sleep(60)  # 挂单后，停止运行1分钟
@@ -69,6 +74,7 @@ if __name__ == "__main__":
         instance.loop_run()
     except Exception as e:
         error_info = "报警：币种 {coin},服务停止.错误原因 {info}".format(coin=instance.coinType,info=str(e))
+        ding.send(error_info)
         print(error_info)
 
 # 调试看报错运行下面，正式运行用上面
