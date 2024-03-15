@@ -28,6 +28,10 @@ class Run_Main():
         pass
 
     def loop_run(self):
+        grid_buy_price = runbet.get_buy_price()  # 当前网格买入价格
+        grid_sell_price = runbet.get_sell_price()  # 当前网格卖出价格
+        msg = "初始买入价格 %s, 初始卖出价格 %s" % (grid_buy_price, grid_sell_price)
+        ding.send(msg)
         while True:
             cur_market_price = get_price() # 当前交易对市价
             grid_buy_price = runbet.get_buy_price()  # 当前网格买入价格
